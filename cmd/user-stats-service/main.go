@@ -59,7 +59,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	r.GET("accounts/:instance", authHander, func(c *gin.Context) {
+	r.GET("fetch/:instance", authHander, func(c *gin.Context) {
 
 		instance := c.Param("instance")
 
