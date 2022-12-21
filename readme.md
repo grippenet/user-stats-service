@@ -2,6 +2,68 @@
 
 Tiny service to fetch aggregated statistics from user accounts
 
+## Handled metrics
+
+- users_count (count): Count of user accounts (total)
+- users_active (count): Count of activated accounts
+- users_weekly (count): Count of activated accounts with a weekly reminded subscription
+- users_newsletter (count): Count of activated accounts with a newsletter subscription
+
+## Usage
+
+The server is loaded by default on :8080 port (:3252 on docker image)
+
+Endpoints :
+
+### $baseURI/fetch/:instance
+
+Fetch stats for the provided instance name (replace :instance by instance name)
+
+Optional parameters:
+
+- `from` and `until`: timestamp for users activated from resp. until this timestamp (using account.accountConfirmedAt field)
+
+Response: an array of Counter results
+
+Each Counter has 3 possible fields: 
+
+- name: counter name
+- value: `CounterValue` object (depend on type see below)
+- error: if this field is provided then an error occured
+
+`CounterValue` structure with 2 fields
+
+- type: 'count' or 'map'
+- value: integer or a map of integer (if type is 'map')
+
+Example
+
+```json
+[
+    {
+        "name": "users_count",
+        "value": {
+            "type": "count",
+            "value": 9911
+        }
+    },
+    {
+        "name": "users_weekday",
+        "value": {
+            "type": "map",
+            "value": {
+                "1": 292,
+                "2": 861,
+                "3": 934,
+                "4": 938,
+                "5": 928,
+                "6": 620
+            }
+        }
+    }
+]
+```
+
 ## Configuration
 
 Environments:
