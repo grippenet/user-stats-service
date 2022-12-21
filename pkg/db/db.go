@@ -61,8 +61,9 @@ func filterField(field string, filter types.StatFilter) interface{} {
 }
 
 type UserOptions struct {
-	ActiveAccount      bool
-	SubscribedToWeekly bool
+	ActiveAccount          bool
+	SubscribedToWeekly     bool
+	SubscribedToNewsletter bool
 }
 
 func combineCriteria(cc []interface{}) interface{} {
@@ -97,6 +98,10 @@ func (svc *UserDBService) CountUser(instanceID string, filter types.StatFilter, 
 	}
 	if opts.SubscribedToWeekly {
 		criteria = append(criteria, bson.M{"contactPreferences.subscribedToWeekly": true})
+	}
+
+	if opts.SubscribedToNewsletter {
+		criteria = append(criteria, bson.M{"contactPreferences.subscribedToNewsletter": true})
 	}
 
 	cc := combineCriteria(criteria)

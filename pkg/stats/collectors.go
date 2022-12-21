@@ -41,6 +41,13 @@ func (u *UserWeeklySubscribersCollector) Fetch(dbService *db.UserDBService, inst
 	return userCounter("users_weekly", dbService, instanceID, filter, db.UserOptions{ActiveAccount: true, SubscribedToWeekly: true})
 }
 
+type UserNewsletterSubscribersCollector struct {
+}
+
+func (u *UserNewsletterSubscribersCollector) Fetch(dbService *db.UserDBService, instanceID string, filter types.StatFilter) (types.Counter, error) {
+	return userCounter("users_newsletter", dbService, instanceID, filter, db.UserOptions{ActiveAccount: true, SubscribedToNewsletter: true})
+}
+
 type UserWeekDayCollector struct {
 }
 
