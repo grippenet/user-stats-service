@@ -8,6 +8,7 @@ Tiny service to fetch aggregated statistics from user accounts
 - users_active (count): Count of activated accounts
 - users_weekly (count): Count of activated accounts with a weekly reminded subscription
 - users_newsletter (count): Count of activated accounts with a newsletter subscription
+- users_weekday (map): Map of count of activated accounts by weekday assigned for weekly reminder (key of the map=weekday number)
 
 ## Usage
 
@@ -69,5 +70,6 @@ Example
 Environments:
 
 - AUTH_PASSWORD : a bcrypt hashed password to use for Basic Authentication (no auth if empty)
-
-Db Connection: see USER_DB_ in [User Management Service]()
+- Db Connection vars: see in [User Management Service](https://github.com/grippenet/user-management-service/blob/master/build/docker/example/user-management-env.list), accept User Db variables and general db client settings
+- PORT: change the listening port
+- GIN_MODE: can be configured ('release' will be less verbose)
