@@ -18,6 +18,8 @@ func NewStatService(dbService *db.UserDBService) *StatsService {
 	collectors := []StatCollector{
 		&UserStatCollector{},
 		&UserActiveCollector{},
+		&UserWeeklySubscribersCollector{},
+		&UserWeekDayCollector{},
 	}
 
 	return &StatsService{dbService: dbService, collectors: collectors}
