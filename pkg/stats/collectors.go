@@ -13,12 +13,12 @@ type UserStatCollector struct {
 }
 
 func userCounter(name string, dbService *db.UserDBService, instanceID string, filter types.StatFilter, userOptions db.UserOptions) (types.Counter, error) {
-	counter := types.Counter{Name: name}
+	counter := types.Counter{Name: name, Type: types.COUNTER_TYPE_COUNT}
 	count, err := dbService.CountUser(instanceID, filter, userOptions)
 	if err != nil {
 		return counter, err
 	}
-	counter.Value = SimpleCounter{Count: count}
+	counter.Value = count
 	return counter, nil
 }
 
@@ -52,12 +52,12 @@ type UserWeekDayCollector struct {
 }
 
 func (u *UserWeekDayCollector) Fetch(dbService *db.UserDBService, instanceID string, filter types.StatFilter) (types.Counter, error) {
-	counter := types.Counter{Name: "users_weekday"}
+	counter := types.Counter{Name: "users_weekday", Type: types.COUNTER_TYPE_MAP}
 
 	counts, err := dbService.WeekDayReminders(instanceID, filter, db.UserOptions{})
 	if err != nil {
 		return counter, err
 	}
-	counter.Value = MapCounter{Counts: counts}
+	counter.Value = counts
 	return counter, nil
 }
