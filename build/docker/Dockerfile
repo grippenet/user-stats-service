@@ -24,7 +24,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflag
 FROM scratch
 ARG DIR
 COPY --from=builder $DIR/cmd/user-stats-service/app /app/
-COPY --from=builder $DIR/data /app/
 WORKDIR /app
 ENV GIN_MODE=release
 ENV PORT=3252
