@@ -26,16 +26,16 @@ Optional parameters:
 
 Response: an array of Counter results
 
-Each Counter has 3 possible fields: 
+Each Counter has 4 possible fields: 
 
 - name: counter name
-- value: `CounterValue` object (depend on type see below)
-- error: if this field is provided then an error occured
-
-`CounterValue` structure with 2 fields
-
+- value: object value (depend on type see below)
 - type: 'count' or 'map'
-- value: integer or a map of integer (if type is 'map')
+- error: if this field is provided then an error occurred
+
+value field is 
+- a number if type is 'count'
+- an object (key value pair) if type is 'map'
 
 Example
 
@@ -43,23 +43,19 @@ Example
 [
     {
         "name": "users_count",
-        "value": {
-            "type": "count",
-            "value": 9911
-        }
+        "type": "count",
+        "value": 9911
     },
     {
         "name": "users_weekday",
+        "type": "map",
         "value": {
-            "type": "map",
-            "value": {
                 "1": 292,
                 "2": 861,
                 "3": 934,
                 "4": 938,
                 "5": 928,
                 "6": 620
-            }
         }
     }
 ]
