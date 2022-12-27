@@ -21,6 +21,9 @@ func NewStatService(dbService *db.UserDBService) *StatsService {
 		&UserWeeklySubscribersCollector{},
 		&UserWeekDayCollector{},
 		&UserNewsletterSubscribersCollector{},
+		&UserProfilesCollector{},
+		&ActiveProfilesCollector{},
+		&ProfilesHistogramCollector{},
 	}
 
 	return &StatsService{dbService: dbService, collectors: collectors}

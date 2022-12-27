@@ -114,6 +114,60 @@ func (svc *UserDBService) CountUser(instanceID string, filter types.StatFilter, 
 	return count, nil
 }
 
+func (svc *UserDBService) CountProfiles(instanceID string, filter types.StatFilter, opts UserOptions) (int64, error) {
+	ctx, cancel := svc.getContext()
+	defer cancel()
+
+	users := svc.collectionRefUsers(instanceID)
+
+	criteria := make([]interface{}, 0, 1)
+
+	filters := filterField("timestamps.createdAt", filter)
+	if filters != nil {
+		criteria = append(criteria, filters)
+	}
+
+	if opts.ActiveAccount {
+		criteria = append(criteria, bson.M{"account.accountConfirmedAt": bson.M{"$gt": 0}})
+	}
+	if opts.SubscribedToWeekly {
+		return 0, fmt.Errorf("options SubscribedToWeekly not handled for this counter")
+	}
+
+	if opts.SubscribedToNewsletter {
+		return 0, fmt.Errorf("options SubscribedToWeekly not handled for this counter")
+	}
+
+	cc := combineCriteria(criteria)
+
+	agg := bson.A{
+		bson.M{"$match": cc},
+		bson.M{"$group": bson.M{
+			"_id": "total",
+			"count": bson.M{
+				"$sum": bson.M{"$size": "$profiles"},
+			},
+		},
+		},
+	}
+
+	cursor, err := users.Aggregate(ctx, agg)
+
+	if err != nil {
+		return 0, err
+	}
+	var results []bson.M
+	if err = cursor.All(ctx, &results); err != nil {
+		return 0, err
+	}
+	if len(results) == 0 {
+		return 0, fmt.Errorf("no document")
+	}
+	r := results[0]
+	count := r["count"].(int32)
+	return int64(count), nil
+}
+
 func (svc *UserDBService) WeekDayReminders(instanceID string, filter types.StatFilter, opts UserOptions) (map[string]int64, error) {
 	ctx, cancel := svc.getContext()
 	defer cancel()
@@ -156,7 +210,54 @@ func (svc *UserDBService) WeekDayReminders(instanceID string, filter types.StatF
 	counts := make(map[string]int64, len(results))
 
 	for _, result := range results {
-		fmt.Println(result)
+		id := fmt.Sprint(result["_id"])
+		count := result["count"].(int32)
+		counts[id] = int64(count)
+	}
+
+	return counts, nil
+}
+
+func (svc *UserDBService) ProfilesCount(instanceID string, filter types.StatFilter, opts UserOptions) (map[string]int64, error) {
+	ctx, cancel := svc.getContext()
+	defer cancel()
+
+	users := svc.collectionRefUsers(instanceID)
+
+	criteria := make([]interface{}, 0, 1)
+
+	filters := filterField("timestamps.createdAt", filter)
+	if filters != nil {
+		criteria = append(criteria, filters)
+	}
+
+	criteria = append(criteria, bson.M{"account.accountConfirmedAt": bson.M{"$gt": 0}})
+
+	cc := combineCriteria(criteria)
+
+	agg := bson.A{
+		bson.M{"$match": cc},
+		bson.M{"$group": bson.M{
+			"_id":   bson.M{"$size": "$profiles"},
+			"count": bson.M{"$sum": 1},
+		},
+		},
+	}
+
+	cursor, err := users.Aggregate(ctx, agg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var results []bson.M
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	counts := make(map[string]int64, len(results))
+
+	for _, result := range results {
 		id := fmt.Sprint(result["_id"])
 		count := result["count"].(int32)
 		counts[id] = int64(count)

@@ -9,7 +9,9 @@ Tiny service to fetch aggregated statistics from user accounts
 - users_weekly (count): Count of activated accounts with a weekly reminded subscription
 - users_newsletter (count): Count of activated accounts with a newsletter subscription
 - users_weekday (map): Map of count of activated accounts by weekday assigned for weekly reminder (key of the map=weekday number)
-
+- profiles_count (count): Count of profiles (total)
+- profiles_active (count): Count of profiles among active accounts
+- profiles_histogram (map): Count of accounts (value) by number of profiles in the account (key), distribution of accounts by profile count.
 ## Usage
 
 The server is loaded by default on :8080 port (:3252 on docker image)

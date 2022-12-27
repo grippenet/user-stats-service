@@ -61,3 +61,41 @@ func (u *UserWeekDayCollector) Fetch(dbService *db.UserDBService, instanceID str
 	counter.Value = counts
 	return counter, nil
 }
+
+func profilesCounters(name string, dbService *db.UserDBService, instanceID string, filter types.StatFilter, userOptions db.UserOptions) (types.Counter, error) {
+	counter := types.Counter{Name: name, Type: types.COUNTER_TYPE_COUNT}
+	counts, err := dbService.CountProfiles(instanceID, filter, userOptions)
+	if err != nil {
+		return counter, err
+	}
+	counter.Value = counts
+	return counter, nil
+}
+
+type UserProfilesCollector struct {
+}
+
+func (u *UserProfilesCollector) Fetch(dbService *db.UserDBService, instanceID string, filter types.StatFilter) (types.Counter, error) {
+	return profilesCounters("profiles_count", dbService, instanceID, filter, db.UserOptions{})
+}
+
+type ActiveProfilesCollector struct {
+}
+
+func (u *ActiveProfilesCollector) Fetch(dbService *db.UserDBService, instanceID string, filter types.StatFilter) (types.Counter, error) {
+	return profilesCounters("profiles_active", dbService, instanceID, filter, db.UserOptions{ActiveAccount: true})
+}
+
+type ProfilesHistogramCollector struct {
+}
+
+func (u *ProfilesHistogramCollector) Fetch(dbService *db.UserDBService, instanceID string, filter types.StatFilter) (types.Counter, error) {
+	counter := types.Counter{Name: "profiles_histogram", Type: types.COUNTER_TYPE_MAP}
+
+	counts, err := dbService.ProfilesCount(instanceID, filter, db.UserOptions{ActiveAccount: true})
+	if err != nil {
+		return counter, err
+	}
+	counter.Value = counts
+	return counter, nil
+}
